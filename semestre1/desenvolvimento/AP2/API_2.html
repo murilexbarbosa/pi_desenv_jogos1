@@ -1,0 +1,240 @@
+<!DOCTYPE html> 
+<html dir="ltr" lang="pt-BR"> 
+	<head> 
+		<meta charset="UTF-8" /> 
+		<style type="text/css">
+		
+			
+		</style>
+	</head>
+	<body>
+	
+		<canvas id="myCanvas" width="1000" height="300" style="border:solid 1px black">		
+			<img src="imagens/Walk_1.png" id="heroi">
+			<img src="imagens/cenario_1.png" id="cenario">
+		</canvas>
+	</body>
+</html>
+<script type="text/javascript">
+	//Exercício 14*: Faça um personagem de sua preferência andar na tela de sua página.
+	
+
+	
+	
+	//definindo valores padroes
+	var pos_x = 1;
+	var pos_y = 105;
+	var ultimo_sprite_andar = 0;
+	//velocidade do heroi ao comecar o jogo
+	var velocidade_inicial = 7;
+	//velocidade do heroi a ser utilizado caso tenha algum criterio de aumento de velocidade
+	var velocidade_atual = velocidade_inicial;
+	var altura_pulo = 10;
+	var sentido_direcao = 'direita';
+	
+	lista_img_andar_direita = [ "imagens/Walk_1.png",
+								"imagens/Walk_2.png",
+								"imagens/Walk_3.png",
+								"imagens/Walk_4.png",
+								"imagens/Walk_5.png",
+								"imagens/Walk_6.png",
+								"imagens/Walk_7.png",
+								"imagens/Walk_8.png",
+								"imagens/Walk_9.png",
+								"imagens/Walk_10.png",
+								"imagens/Walk_11.png",
+								"imagens/Walk_12.png",
+								"imagens/Walk_13.png",
+								"imagens/Walk_14.png",
+								"imagens/Walk_15.png"]
+	
+	lista_img_andar_esquerda = [ "imagens/Walk_esq_1.png",
+								 "imagens/Walk_esq_2.png",
+								 "imagens/Walk_esq_3.png",
+								 "imagens/Walk_esq_4.png",
+								 "imagens/Walk_esq_5.png",
+								 "imagens/Walk_esq_6.png",
+								 "imagens/Walk_esq_7.png",
+								 "imagens/Walk_esq_8.png",
+								 "imagens/Walk_esq_9.png",
+								 "imagens/Walk_esq_10.png",
+								 "imagens/Walk_esq_11.png",
+								 "imagens/Walk_esq_12.png",
+								 "imagens/Walk_esq_13.png",
+								 "imagens/Walk_esq_14.png",
+								 "imagens/Walk_esq_15.png"]	
+								 
+	lista_img_pular_direita = [ "imagens/Jump_1.png",
+								"imagens/Jump_2.png",
+								"imagens/Jump_3.png",
+								"imagens/Jump_4.png",
+								"imagens/Jump_5.png",
+								"imagens/Jump_6.png",
+								"imagens/Jump_7.png",
+								"imagens/Jump_8.png",
+								"imagens/Jump_9.png",
+								"imagens/Jump_10.png",
+								"imagens/Jump_11.png",
+								"imagens/Jump_12.png",
+								"imagens/Jump_13.png",
+								"imagens/Jump_14.png"]
+	
+	lista_img_pular_esquerda = [ "imagens/Jump_esq_1.png",
+								 "imagens/Jump_esq_2.png",
+								 "imagens/Jump_esq_3.png",
+								 "imagens/Jump_esq_4.png",
+								 "imagens/Jump_esq_5.png",
+								 "imagens/Jump_esq_6.png",
+								 "imagens/Jump_esq_7.png",
+								 "imagens/Jump_esq_8.png",
+								 "imagens/Jump_esq_9.png",
+								 "imagens/Jump_esq_10.png",
+								 "imagens/Jump_esq_11.png",
+								 "imagens/Jump_esq_12.png",
+								 "imagens/Jump_esq_13.png",
+								 "imagens/Jump_esq_14.png"]									 								 								 								
+								 
+	//carregando cena
+	window.onload = function() {
+		var c = document.getElementById("myCanvas");
+		var ctx = c.getContext("2d");
+		ctx.clearRect(0,0,c.width,c.height);
+		
+		var img_cenario = document.getElementById("cenario");
+		ctx.drawImage(img_cenario,0, 0);		
+		
+		var img = document.getElementById("heroi");
+		img.src = lista_img_andar_direita[0];
+		ctx.drawImage(img, pos_x, pos_y);
+	};	
+	
+	
+	function sleep(ms) {
+	  return new Promise(resolve => setTimeout(resolve, ms));
+	}
+
+	function andar(direcao) {
+		var c = document.getElementById("myCanvas");
+		var ctx = c.getContext("2d");
+		ctx.clearRect(0,0,c.width,c.height);
+		var img = document.getElementById("heroi");
+
+		if(direcao == 'direita'){
+			sentido_direcao = 'direita';
+			
+			console.log(sentido_direcao);
+			
+			if(ultimo_sprite_andar+1 <=14){
+				img.src = lista_img_andar_direita[ultimo_sprite_andar+1];
+				ctx.drawImage(img, pos_x+velocidade_atual, pos_y);	
+				
+				ultimo_sprite_andar = ultimo_sprite_andar+1;
+				
+				if (pos_x <= 500){
+					pos_x = pos_x+velocidade_atual;
+				}
+			}else{
+				ultimo_sprite_andar = 0;
+				img.src = lista_img_andar_direita[ultimo_sprite_andar+1];
+				ctx.drawImage(img, pos_x+velocidade_atual, pos_y);	
+
+				
+				ultimo_sprite_andar = ultimo_sprite_andar+1;
+				if (pos_x <= 500){
+					pos_x = pos_x+velocidade_atual;					
+				}
+			}		
+
+		}else if(direcao == 'esquerda'){
+			sentido_direcao = 'esquerda';
+
+			if(ultimo_sprite_andar+1 <=14){
+				img.src = lista_img_andar_esquerda[ultimo_sprite_andar+1];
+	
+				ctx.drawImage(img, pos_x-velocidade_atual, pos_y);	
+				
+				ultimo_sprite_andar = ultimo_sprite_andar+1;
+				if (pos_x >= 7){
+					pos_x = pos_x-velocidade_atual;
+				}		
+			}else{
+				ultimo_sprite_andar = 0;
+				img.src = lista_img_andar_esquerda[ultimo_sprite_andar+1];
+				ctx.drawImage(img, pos_x-velocidade_atual, pos_y);	
+
+				ultimo_sprite_andar = ultimo_sprite_andar+1;
+				
+				if (pos_x >= 7){
+					pos_x = pos_x-velocidade_atual;
+				}
+			}		
+
+		}			
+	}
+	
+	async function pular(){
+		var c = document.getElementById("myCanvas");
+		var ctx = c.getContext("2d");		
+		var img = document.getElementById("heroi");	
+		
+		var lista_pular = []
+		
+		
+		if (sentido_direcao == 'direita'){
+			lista_pular = lista_img_pular_direita;
+		}else{
+			lista_pular = lista_img_pular_esquerda;
+		}
+	
+		
+		for (var i = 0; i < lista_pular.length; i++) {
+			ctx.clearRect(0,0,c.width,c.height);
+			img.src = lista_pular[i];
+			
+			
+			if (i >= 0 && i <=3){
+				
+				ctx.drawImage(img, pos_x, pos_y);
+				await sleep(80);				
+			}else if(i >= 4 && i <= 8){
+				ctx.drawImage(img, pos_x, pos_y-altura_pulo);	
+				pos_y = pos_y-altura_pulo;	
+				await sleep(80);
+			}else{
+				ctx.drawImage(img, pos_x, pos_y+altura_pulo);	
+				pos_y = pos_y+altura_pulo;		
+				await sleep(65);				
+			}
+		}	
+		
+		ctx.clearRect(0,0,c.width,c.height);
+		if (sentido_direcao == 'direita'){
+			img.src = lista_img_andar_direita[0];
+		}else{
+			img.src = lista_img_andar_esquerda[0];
+		}
+		ctx.drawImage(img, pos_x, pos_y);		
+	}
+
+
+	//Configurando botoes de entrada
+	document.addEventListener("keypress", verificaTecla, false);
+	function verificaTecla(e){
+		var keyCode = e.keyCode;
+		/*
+			d = 100
+			a = 97
+		*/
+		if(keyCode == 100){
+			
+			andar('direita');
+		}else if(keyCode == 97){
+			andar('esquerda');
+		
+		}else if(keyCode == 32){
+			pular()
+		}
+		
+	};
+			
+</script>

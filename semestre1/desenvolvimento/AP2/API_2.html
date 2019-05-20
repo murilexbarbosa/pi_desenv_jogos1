@@ -23,7 +23,10 @@
 	
 	//definindo valores padroes
 	var pos_x = 1;
-	var pos_y = 105;
+	var pos_y = 90;
+	
+	var pos_x_cenario = 0;
+	var pos_y_cenario = 0;	
 	var ultimo_sprite_andar = 0;
 	//velocidade do heroi ao comecar o jogo
 	var velocidade_inicial = 7;
@@ -101,7 +104,7 @@
 		ctx.clearRect(0,0,c.width,c.height);
 		
 		var img_cenario = document.getElementById("cenario");
-		ctx.drawImage(img_cenario,0, 0);		
+		ctx.drawImage(img_cenario,pos_x_cenario, pos_y_cenario);		
 		
 		var img = document.getElementById("heroi");
 		img.src = lista_img_andar_direita[0];
@@ -118,6 +121,7 @@
 		var ctx = c.getContext("2d");
 		ctx.clearRect(0,0,c.width,c.height);
 		var img = document.getElementById("heroi");
+					
 
 		if(direcao == 'direita'){
 			sentido_direcao = 'direita';
@@ -126,27 +130,48 @@
 			
 			if(ultimo_sprite_andar+1 <=14){
 				img.src = lista_img_andar_direita[ultimo_sprite_andar+1];
-				ctx.drawImage(img, pos_x+velocidade_atual, pos_y);	
+				
+				
 				
 				ultimo_sprite_andar = ultimo_sprite_andar+1;
 				
 				if (pos_x <= 500){
-					pos_x = pos_x+velocidade_atual;
+					var img_cenario = document.getElementById("cenario");
+					ctx.drawImage(img_cenario,pos_x_cenario, pos_y_cenario);					
+					ctx.drawImage(img, pos_x+velocidade_atual, pos_y);					
+					pos_x = pos_x+velocidade_atual;				
+				}else{
+					pos_x_cenario = pos_x_cenario -velocidade_atual;
+					var img_cenario = document.getElementById("cenario");
+					ctx.drawImage(img_cenario,pos_x_cenario, pos_y_cenario);					
+					ctx.drawImage(img, pos_x+velocidade_atual, pos_y);					
 				}
 			}else{
 				ultimo_sprite_andar = 0;
 				img.src = lista_img_andar_direita[ultimo_sprite_andar+1];
-				ctx.drawImage(img, pos_x+velocidade_atual, pos_y);	
+					
 
 				
 				ultimo_sprite_andar = ultimo_sprite_andar+1;
 				if (pos_x <= 500){
+					var img_cenario = document.getElementById("cenario");
+					ctx.drawImage(img_cenario,pos_x_cenario, pos_y_cenario);					
+					ctx.drawImage(img, pos_x+velocidade_atual, pos_y);
 					pos_x = pos_x+velocidade_atual;					
+				}else{
+					pos_x_cenario = pos_x_cenario -velocidade_atual;
+					var img_cenario = document.getElementById("cenario");
+					ctx.drawImage(img_cenario,pos_x_cenario, pos_y_cenario);					
+					ctx.drawImage(img, pos_x+velocidade_atual, pos_y);				
 				}
+				console.log(pos_x_cenario);
 			}		
 
 		}else if(direcao == 'esquerda'){
 			sentido_direcao = 'esquerda';
+			var img_cenario = document.getElementById("cenario");
+			ctx.drawImage(img_cenario,pos_x_cenario, pos_y_cenario);				
+			
 
 			if(ultimo_sprite_andar+1 <=14){
 				img.src = lista_img_andar_esquerda[ultimo_sprite_andar+1];
@@ -169,7 +194,8 @@
 				}
 			}		
 
-		}			
+		}		
+	
 	}
 	
 	async function pular(){
@@ -189,6 +215,9 @@
 		
 		for (var i = 0; i < lista_pular.length; i++) {
 			ctx.clearRect(0,0,c.width,c.height);
+			var img_cenario = document.getElementById("cenario");
+			ctx.drawImage(img_cenario,pos_x_cenario, pos_y_cenario);		
+			
 			img.src = lista_pular[i];
 			
 			
@@ -208,6 +237,9 @@
 		}	
 		
 		ctx.clearRect(0,0,c.width,c.height);
+		var img_cenario = document.getElementById("cenario");
+		ctx.drawImage(img_cenario,pos_x_cenario, pos_y_cenario);		
+		
 		if (sentido_direcao == 'direita'){
 			img.src = lista_img_andar_direita[0];
 		}else{

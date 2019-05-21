@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Meu Primeiro Jogo</title>
+	<script src="http://cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+	<style type="text/css">
+		body{
+			margin: 0;
+		}
+	</style>
+</head>
+<body>
+	<script type="text/javascript">
+		var jogo = new Phaser.Game(800, 600, Phaser.AUTO, '', {
+			preload: preload,
+			create: create,
+			update: update
+		});
+		
+		function preload(){
+			jogo.load.image('ceu', 'assets/sky.png');
+			jogo.load.image('chao', 'assets/plataform.png');
+			jogo.load.image('estrela', 'assets/star.png');
+			jogo.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+		}
+		function create(){
+			jogo.add.sprite(0, 0, 'estrela');
+		}
+		function update(){
+		
+		}
+	
+	</script>
+</body>
+</html>

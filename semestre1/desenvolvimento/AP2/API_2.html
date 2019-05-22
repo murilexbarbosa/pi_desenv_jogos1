@@ -18,9 +18,6 @@
 <script type="text/javascript">
 	//Exercício 14*: Faça um personagem de sua preferência andar na tela de sua página.
 	
-
-	
-	
 	//definindo valores padroes
 	var pos_x = 1;
 	var pos_y = 90;
@@ -119,25 +116,21 @@
 	function andar(direcao) {
 		var c = document.getElementById("myCanvas");
 		var ctx = c.getContext("2d");
-		ctx.clearRect(0,0,c.width,c.height);
 		var img = document.getElementById("heroi");
-					
-
+		ctx.clearRect(0,0,c.width,c.height);
+		var img_cenario = document.getElementById("cenario");
+		ctx.drawImage(img_cenario,pos_x_cenario, pos_y_cenario);
+		
 		if(direcao == 'direita'){
 			sentido_direcao = 'direita';
 			
-			console.log(sentido_direcao);
-			
 			if(ultimo_sprite_andar+1 <=14){
 				img.src = lista_img_andar_direita[ultimo_sprite_andar+1];
-				
-				
-				
 				ultimo_sprite_andar = ultimo_sprite_andar+1;
 				
 				if (pos_x <= 500){
-					var img_cenario = document.getElementById("cenario");
-					ctx.drawImage(img_cenario,pos_x_cenario, pos_y_cenario);					
+					//var img_cenario = document.getElementById("cenario");
+					//ctx.drawImage(img_cenario,pos_x_cenario, pos_y_cenario);					
 					ctx.drawImage(img, pos_x+velocidade_atual, pos_y);					
 					pos_x = pos_x+velocidade_atual;				
 				}else{
@@ -149,9 +142,6 @@
 			}else{
 				ultimo_sprite_andar = 0;
 				img.src = lista_img_andar_direita[ultimo_sprite_andar+1];
-					
-
-				
 				ultimo_sprite_andar = ultimo_sprite_andar+1;
 				if (pos_x <= 500){
 					var img_cenario = document.getElementById("cenario");

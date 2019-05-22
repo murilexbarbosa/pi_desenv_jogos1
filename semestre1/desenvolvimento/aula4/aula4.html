@@ -11,6 +11,7 @@
 </head>
 <body>
 	<script type="text/javascript">
+		var platforms;
 		var jogo = new Phaser.Game(800, 600, Phaser.AUTO, '', {
 			preload: preload,
 			create: create,
@@ -19,12 +20,30 @@
 		
 		function preload(){
 			jogo.load.image('ceu', 'assets/sky.png');
-			jogo.load.image('chao', 'assets/plataform.png');
+			jogo.load.image('chao', 'assets/platform.png');
 			jogo.load.image('estrela', 'assets/star.png');
 			jogo.load.spritesheet('dude', 'assets/dude.png', 32, 48);
 		}
 		function create(){
-			jogo.add.sprite(0, 0, 'estrela');
+			jogo.physics.startSystem(Phaser.Physics.ARCADE);
+			jogo.add.sprite(0, 0, 'ceu');
+
+			platforms = jogo.add.group();
+			platforms.enableBody = true;
+
+			var chao = platforms.create(0, jogo.world.height - 64, 'chao');
+
+			chao.scale.setTo(2, 2);
+			chao.body.immovable = true;
+
+			var ressalto = platforms.create(400, 400, 'chao');
+
+			ressalto.body.immovable = true;
+
+			ressalto = platforms.create(-150, 250, 'chao')
+
+			ressalto.body.immovable = true;
+			;
 		}
 		function update(){
 		

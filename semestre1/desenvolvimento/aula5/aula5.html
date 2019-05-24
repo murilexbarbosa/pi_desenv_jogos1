@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Meu Primeiro Jogo</title>
+	<script src="http://cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+	<style type="text/css">
+		body{
+			margin: 0;
+		}
+	</style>
+</head>
+<body>
+	<script type="text/javascript">
+		var platforms;
+		var personagem;
+		var cursores;
+		
+		var jogo = new Phaser.Game(800, 600, Phaser.AUTO, '', {
+			preload: carregamento,
+			create: criacao,
+			update: atualizacao
+		});
+		
+		function carregamento(){
+			jogo.load.image('ceu', 'assets/sky.png');
+			jogo.load.image('chao', 'assets/platform.png');
+			jogo.load.image('estrela', 'assets/star.png');
+			jogo.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+		}
+		function criacao(){
+			jogo.physics.startSystem(Phaser.Physics.ARCADE);
+			jogo.add.sprite(0, 0, 'ceu');
+
+			platforms = jogo.add.group();
+			platforms.enableBody = true;
+
+			var chao = platforms.create(0, jogo.world.height - 64, 'chao');
+			chao.scale.setTo(2, 2);
+			chao.body.immovable = true;
+
+			var ressalto = platforms.create(400, 400, 'chao');
+			ressalto.body.immovable = true;
+
+			ressalto = platforms.create(-150, 250, 'chao');
+			ressalto.body.immovable = true;
+			
+			personagem = jogo.add.sprite(32,  jogo.world.height - 150, 'dude');
+			
+			jogo.physics.arcade.enable(personagem);
+			personagem.body.bounce.y = 0.2;
+			personagem.body.gravity.y = 300;
+			personagem.body.collideWorldBounds = true;
+			
+			personagem.animations.add('left', [0, 1, 2, 3], 10, true);
+			personagem.animations.add('right', [5, 6, 7, 8], 10, true);
+			
+			cursores = jogo.input.keyboard.createCursorKeys();
+			
+		}
+		function atualizacao(){
+			var acertarPlataforma = jogo.physics.arcade.collide(personagem, platforms);
+			
+			personagem.body.velocity.x = 0;
+			
+			if(cursores.left.isDown){
+				personagem.body.velocity.x = -150;		
+				personagem.animations.play('left');
+			}else if(cursores.right.isDown){
+				personagem.body.velocity.x = 150;			
+				personagem.animations.play('right');
+			}else {
+				personagem.frame = 4;
+				personagem.animations.stop();			
+			}		
+			
+			if(cursores.up.isDown && personagem.body.touching.down && acertarPlataforma){
+				personagem.body.velocity.y = -350;	
+			}
+		}
+	
+	</script>
+</body>
+</html>

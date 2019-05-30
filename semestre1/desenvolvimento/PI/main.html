@@ -28,20 +28,50 @@
 		function carregamento(){
 			jogo.load.image('ceu', 'assets/sky.png');
 			jogo.load.image('chao', 'assets/chao.png');
-			//jogo.load.image('estrela', 'assets/star.png');
 			jogo.load.spritesheet('heroi', 'assets/spritesheet_heroi.png', 100, 164);
+			
+			jogo.load.image('mountains-back', 'assets/mountains-back.png');
+			jogo.load.image('mountains-mid1', 'assets/mountains-mid1.png');
+			jogo.load.image('mountains-mid2', 'assets/mountains-mid2.png');			
 		}
 		function criacao(){
+			//Insere fisica ao jogo
 			jogo.physics.startSystem(Phaser.Physics.ARCADE);
-			jogo.world.setBounds(0, 0, 1920, 600);
+			
+			//Configura tamanho do cenario
+			jogo.world.setBounds(0, 0, 3840, 600);
+			
+			//Insere Imagem Ceu
 			ceu = jogo.add.sprite(0, 0, 'ceu');
 			ceu.scale.setTo(5, 1);
+			
+			//Insere Imagens das montanhas ao fundo
+			mountainsBack = jogo.add.tileSprite(0, 
+				jogo.height - jogo.cache.getImage('mountains-back').height+210, 
+				jogo.world.width, 
+				jogo.cache.getImage('mountains-back').height, 
+				'mountains-back'
+			);
+			mountainsMid1 = jogo.add.tileSprite(0, 
+				jogo.height - jogo.cache.getImage('mountains-mid1').height+200, 
+				jogo.world.width, 
+				jogo.cache.getImage('mountains-mid1').height, 
+				'mountains-mid1'
+			);
+			mountainsMid2 = jogo.add.tileSprite(0, 
+				jogo.height - jogo.cache.getImage('mountains-mid2').height+200, 
+				jogo.world.width, 
+				jogo.cache.getImage('mountains-mid2').height, 
+				'mountains-mid2'
+			);  			
 
+			//Cria grupo das plataformas e habilita fisica
 			platforms = jogo.add.group();
 			platforms.enableBody = true;
 
+			//Insere o chao do jogo
 			var chao = platforms.create(0, jogo.world.height - 49, 'chao');
-			//chao.scale.setTo(2, 2);
+			chao.width = jogo.world.width;;
 			chao.body.immovable = true;
 
 			//var ressalto = platforms.create(400, 400, 'chao');
@@ -50,41 +80,48 @@
 			//ressalto = platforms.create(-150, 250, 'chao');
 			//ressalto.body.immovable = true;
 			
-			personagem = jogo.add.sprite(32,  jogo.world.height-250, 'heroi');
-			
+			//Insere Personagem, habilita fisica a ele, configura camera para segui-lo
+			personagem = jogo.add.sprite(32,  jogo.world.height-250, 'heroi');			
 			jogo.physics.arcade.enable(personagem);
 			personagem.body.gravity.y = 300;
 			personagem.body.collideWorldBounds = true;
+			jogo.camera.follow(personagem);
 			
+			//Insere animacoes do personagem			
 			personagem.animations.add('left', [14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], 20, true);
 			personagem.animations.add('right', [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], 20, true);
 			
-			cursores = jogo.input.keyboard.createCursorKeys();
-			
-			jogo.camera.follow(personagem);
-			
-			
+			//Insere comandos de teclado no jogo
+			cursores = jogo.input.keyboard.createCursorKeys();				
 		}
 		function atualizacao(){
+			//Insere colisao do personagem com o chao
 			var acertarPlataforma = jogo.physics.arcade.collide(personagem, platforms);
+					
 			
+			//Movimentacao do personagem
 			personagem.body.velocity.x = 0;
-			
 			if(cursores.left.isDown){
 				direcao = 'esquerda';
 				personagem.body.velocity.x = -1*velocidade;		
 				personagem.animations.play('left');
+
+				//movimenta background parallax
+				movimenta_cenario(direcao, personagem.body.x);
 			}else if(cursores.right.isDown){
 				direcao = 'direita';
 				personagem.body.velocity.x = velocidade;			
 				personagem.animations.play('right');
+				
+				//movimenta background parallax
+				movimenta_cenario(direcao, personagem.body.x);
+				
 			}else {
 				if(direcao == 'esquerda'){
 					personagem.frame = 15;
 				}else{
 					personagem.frame = 16;
 				}
-				
 				personagem.animations.stop();			
 			}		
 			
@@ -92,7 +129,22 @@
 				personagem.body.velocity.y = -1*forca_pulo;	
 			}
 		}
-	
+		
+		function movimenta_cenario(direcao, posicao_x){
+			if ((posicao_x > 360)&&(posicao_x < (jogo.world.width-450))){
+				if(direcao == 'esquerda'){
+					mountainsBack.tilePosition.x += 0.02;
+					mountainsMid1.tilePosition.x += 0.1;
+					mountainsMid2.tilePosition.x += 0.35; 					
+				
+				}else{
+				
+					mountainsBack.tilePosition.x -= 0.02;
+					mountainsMid1.tilePosition.x -= 0.1;
+					mountainsMid2.tilePosition.x -= 0.35; 						
+				}
+			}
+		}	
 	</script>
 </body>
 </html>

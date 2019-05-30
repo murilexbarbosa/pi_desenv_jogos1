@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Meu Primeiro Jogo</title>
+	<script src="http://cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+	<style type="text/css">
+		body{
+			margin: 0;
+		}
+	</style>
+</head>
+<body>
+	<script type="text/javascript">
+		var platforms;
+		var personagem;
+		var ceu;
+		var cursores;
+		var direcao = 'direita';
+		var velocidade = 180;
+		var forca_pulo = 250;
+		
+		var jogo = new Phaser.Game(800, 600, Phaser.AUTO, '', {
+			preload: carregamento,
+			create: criacao,
+			update: atualizacao
+		});
+		
+		function carregamento(){
+			jogo.load.image('ceu', 'assets/sky.png');
+			jogo.load.image('chao', 'assets/chao.png');
+			//jogo.load.image('estrela', 'assets/star.png');
+			jogo.load.spritesheet('heroi', 'assets/spritesheet_heroi.png', 100, 164);
+		}
+		function criacao(){
+			jogo.physics.startSystem(Phaser.Physics.ARCADE);
+			jogo.world.setBounds(0, 0, 1920, 600);
+			ceu = jogo.add.sprite(0, 0, 'ceu');
+			ceu.scale.setTo(5, 1);
+
+			platforms = jogo.add.group();
+			platforms.enableBody = true;
+
+			var chao = platforms.create(0, jogo.world.height - 49, 'chao');
+			//chao.scale.setTo(2, 2);
+			chao.body.immovable = true;
+
+			//var ressalto = platforms.create(400, 400, 'chao');
+			//ressalto.body.immovable = true;
+
+			//ressalto = platforms.create(-150, 250, 'chao');
+			//ressalto.body.immovable = true;
+			
+			personagem = jogo.add.sprite(32,  jogo.world.height-250, 'heroi');
+			
+			jogo.physics.arcade.enable(personagem);
+			personagem.body.gravity.y = 300;
+			personagem.body.collideWorldBounds = true;
+			
+			personagem.animations.add('left', [14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], 20, true);
+			personagem.animations.add('right', [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], 20, true);
+			
+			cursores = jogo.input.keyboard.createCursorKeys();
+			
+			jogo.camera.follow(personagem);
+			
+			
+		}
+		function atualizacao(){
+			var acertarPlataforma = jogo.physics.arcade.collide(personagem, platforms);
+			
+			personagem.body.velocity.x = 0;
+			
+			if(cursores.left.isDown){
+				direcao = 'esquerda';
+				personagem.body.velocity.x = -1*velocidade;		
+				personagem.animations.play('left');
+			}else if(cursores.right.isDown){
+				direcao = 'direita';
+				personagem.body.velocity.x = velocidade;			
+				personagem.animations.play('right');
+			}else {
+				if(direcao == 'esquerda'){
+					personagem.frame = 15;
+				}else{
+					personagem.frame = 16;
+				}
+				
+				personagem.animations.stop();			
+			}		
+			
+			if(cursores.up.isDown && personagem.body.touching.down && acertarPlataforma){
+				personagem.body.velocity.y = -1*forca_pulo;	
+			}
+		}
+	
+	</script>
+</body>
+</html>

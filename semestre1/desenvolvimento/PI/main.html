@@ -14,10 +14,20 @@
 		var platforms;
 		var personagem;
 		var ceu;
+		var estrela;
 		var cursores;
 		var direcao = 'direita';
 		var velocidade = 180;
-		var forca_pulo = 250;
+		var velocidade_passo = 20; 
+		var forca_pulo = 300;
+		var quantidade_limite_diamantes = 30;
+		
+		var placar = 0;
+		var textoPlacar;		
+				
+		var plataforma;
+		var coord_plataforma = [{'x':200, 'y':550, 'scale':0.8},{'x':750, 'y':680, 'scale':1},{'x':260, 'y':430, 'scale':0.3}, 
+								{'x':730, 'y':390, 'scale':0.5}, {'x':1150, 'y':630, 'scale':0.5}, {'x':1550, 'y':590, 'scale':1}];
 		
 		var jogo = new Phaser.Game(800, 600, Phaser.AUTO, '', {
 			preload: carregamento,
@@ -28,6 +38,9 @@
 		function carregamento(){
 			jogo.load.image('ceu', 'assets/sky.png');
 			jogo.load.image('chao', 'assets/chao.png');
+			jogo.load.image('diamond', 'assets/diamond.png');
+			jogo.load.image('plataforma', 'assets/platform.png');
+			jogo.load.image('star', 'assets/star.png');
 			jogo.load.spritesheet('heroi', 'assets/spritesheet_heroi.png', 100, 164);
 			
 			jogo.load.image('mountains-back', 'assets/mountains-back.png');
@@ -39,7 +52,7 @@
 			jogo.physics.startSystem(Phaser.Physics.ARCADE);
 			
 			//Configura tamanho do cenario
-			jogo.world.setBounds(0, 0, 3840, 600);
+			jogo.world.setBounds(0, 0, 2000, 800);
 			
 			//Insere Imagem Ceu
 			ceu = jogo.add.sprite(0, 0, 'ceu');
@@ -71,14 +84,11 @@
 
 			//Insere o chao do jogo
 			var chao = platforms.create(0, jogo.world.height - 49, 'chao');
-			chao.width = jogo.world.width;;
+			chao.width = jogo.world.width+2000;
 			chao.body.immovable = true;
 
-			//var ressalto = platforms.create(400, 400, 'chao');
-			//ressalto.body.immovable = true;
-
-			//ressalto = platforms.create(-150, 250, 'chao');
-			//ressalto.body.immovable = true;
+			//Inserindo Plataformas
+			coord_plataforma.forEach(InserePlataformas);
 			
 			//Insere Personagem, habilita fisica a ele, configura camera para segui-lo
 			personagem = jogo.add.sprite(32,  jogo.world.height-250, 'heroi');			
@@ -88,16 +98,31 @@
 			jogo.camera.follow(personagem);
 			
 			//Insere animacoes do personagem			
-			personagem.animations.add('left', [14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], 20, true);
-			personagem.animations.add('right', [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], 20, true);
+			personagem.animations.add('left', [14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], velocidade_passo, true);
+			personagem.animations.add('right', [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], velocidade_passo, true);
+						
+			diamantes = jogo.add.group();
+			diamantes.enableBody = true;
+			
+			estrelas = jogo.add.group();
+			estrelas.enableBody = true;
+
 			
 			//Insere comandos de teclado no jogo
 			cursores = jogo.input.keyboard.createCursorKeys();				
+			
+			textoPlacar = jogo.add.text(16, 210, 'Recorde: 0', {fontSize:'32px', fill:'#FF0000'});
 		}
 		function atualizacao(){
 			//Insere colisao do personagem com o chao
 			var acertarPlataforma = jogo.physics.arcade.collide(personagem, platforms);
-					
+			jogo.physics.arcade.collide(diamantes, platforms);
+			jogo.physics.arcade.collide(estrelas, platforms);
+			
+			if(quantidade_limite_diamantes > diamantes.total){
+				diamante = diamantes.create(Math.floor((Math.random() * jogo.world.width) + 1), 0, 'diamond');
+				diamante.body.gravity.y = Math.floor((Math.random() * 150) + 1);
+			}				
 			
 			//Movimentacao do personagem
 			personagem.body.velocity.x = 0;
@@ -128,6 +153,14 @@
 			if(cursores.up.isDown && personagem.body.touching.down && acertarPlataforma){
 				personagem.body.velocity.y = -1*forca_pulo;	
 			}
+			
+			jogo.physics.arcade.overlap(personagem, diamantes, coletarDiamante, null, this);
+			jogo.physics.arcade.overlap(personagem, estrelas, coletarEstrela, null, this);
+					
+			if (placar > 0 &&(Math.floor((Math.random() * 20) + 1))==20 && estrelas.total==0) {
+				estrela = estrelas.create(Math.floor((Math.random() * jogo.world.width) + 1), 0, 'star');
+				estrela.body.gravity.y = Math.floor((Math.random() * 150) + 1);			
+			}
 		}
 		
 		function movimenta_cenario(direcao, posicao_x){
@@ -145,6 +178,23 @@
 				}
 			}
 		}	
+		
+		function InserePlataformas(item, index){
+			ressalto = platforms.create(item.x, item.y, 'plataforma');
+			ressalto.scale.setTo(item.scale, 1);
+			ressalto.body.immovable = true;		
+		}
+		
+		function coletarDiamante(personagem, diamante){
+			diamante.kill();
+			placar += 1;
+			textoPlacar.text = "Recorde: "+placar;
+		}		
+		
+		function coletarEstrela(personagem, estrela){
+			estrela.kill();
+			velocidade += 30;	
+		}			
 	</script>
 </body>
 </html>

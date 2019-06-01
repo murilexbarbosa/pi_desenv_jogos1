@@ -24,6 +24,11 @@
 		
 		var placar = 0;
 		var textoPlacar;		
+		
+		var timer;	
+		var textoTimer;
+		
+		var textoFim;
 				
 		var plataforma;
 		var coord_plataforma = [{'x':200, 'y':550, 'scale':0.8},{'x':750, 'y':680, 'scale':1},{'x':260, 'y':430, 'scale':0.3}, 
@@ -112,8 +117,26 @@
 			cursores = jogo.input.keyboard.createCursorKeys();				
 			
 			textoPlacar = jogo.add.text(16, 210, 'Recorde: 0', {fontSize:'32px', fill:'#FF0000'});
+			
+			// Create a custom timer
+			timer = jogo.time.create();
+			// Create a delayed event 1m from now
+			timerEvent = timer.add(Phaser.Timer.MINUTE , endTimer, this);
+			// Start the timer
+			timer.start();		
+			textoTimer = jogo.add.text(jogo.world.position.x*-1+350, 
+									   210,
+									   formatTime(Math.round((timerEvent.delay - timer.ms) / 1000), 
+									   {fontSize:'32px', fill:'#FF0000'})									   )			
 		}
 		function atualizacao(){
+			textoPlacar.x = jogo.world.position.x*-1+10;
+			textoPlacar.y = jogo.world.position.y*-1+10;	
+			
+			textoTimer.x = jogo.world.position.x*-1+360;
+			textoTimer.y = jogo.world.position.y*-1+10;
+
+			
 			//Insere colisao do personagem com o chao
 			var acertarPlataforma = jogo.physics.arcade.collide(personagem, platforms);
 			jogo.physics.arcade.collide(diamantes, platforms);
@@ -161,6 +184,16 @@
 				estrela = estrelas.create(Math.floor((Math.random() * jogo.world.width) + 1), 0, 'star');
 				estrela.body.gravity.y = Math.floor((Math.random() * 150) + 1);			
 			}
+			
+			// If our timer is running, show the time in a nicely formatted way, else show 'Done!'
+			if (timer.running) {
+				textoTimer.text = (formatTime(Math.round((timerEvent.delay - timer.ms) / 1000)));
+			}
+			else {
+				textoFim = jogo.add.text(jogo.world.position.x*-1 +320, jogo.world.position.y*-1 + 300, "Fim de jogo! ", {fontSize:'52px', fill:'#FF0000'});
+				jogo.paused = true;
+			}
+		
 		}
 		
 		function movimenta_cenario(direcao, posicao_x){
@@ -195,6 +228,17 @@
 			estrela.kill();
 			velocidade += 30;	
 		}			
+		
+     function endTimer() {
+        // Stop the timer when the delayed event triggers
+        timer.stop();
+    }
+    function formatTime(s) {
+        // Convert seconds (s) to a nicely formatted and padded time string
+        var minutes = "0" + Math.floor(s / 60);
+        var seconds = "0" + (s - minutes * 60);
+        return minutes.substr(-2) + ":" + seconds.substr(-2);   
+    }	
 	</script>
 </body>
 </html>

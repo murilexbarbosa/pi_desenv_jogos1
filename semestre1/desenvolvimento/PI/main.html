@@ -46,6 +46,7 @@
 			jogo.load.image('diamond', 'assets/diamond.png');
 			jogo.load.image('plataforma', 'assets/platform.png');
 			jogo.load.image('star', 'assets/star.png');
+			jogo.load.image('bomb', 'assets/bomb.png');
 			jogo.load.spritesheet('heroi', 'assets/spritesheet_heroi.png', 100, 164);
 			
 			jogo.load.image('mountains-back', 'assets/mountains-back.png');
@@ -111,6 +112,9 @@
 			
 			estrelas = jogo.add.group();
 			estrelas.enableBody = true;
+			
+			bombas = jogo.add.group();
+			bombas.enableBody = true;			
 
 			
 			//Insere comandos de teclado no jogo
@@ -141,6 +145,7 @@
 			var acertarPlataforma = jogo.physics.arcade.collide(personagem, platforms);
 			jogo.physics.arcade.collide(diamantes, platforms);
 			jogo.physics.arcade.collide(estrelas, platforms);
+			jogo.physics.arcade.collide(bombas, platforms);
 			
 			if(quantidade_limite_diamantes > diamantes.total){
 				diamante = diamantes.create(Math.floor((Math.random() * jogo.world.width) + 1), 0, 'diamond');
@@ -179,12 +184,19 @@
 			
 			jogo.physics.arcade.overlap(personagem, diamantes, coletarDiamante, null, this);
 			jogo.physics.arcade.overlap(personagem, estrelas, coletarEstrela, null, this);
+			jogo.physics.arcade.overlap(personagem, bombas, coletarBombas, null, this);
 					
 			if (placar > 0 &&(Math.floor((Math.random() * 20) + 1))==20 && estrelas.total==0) {
 				estrela = estrelas.create(Math.floor((Math.random() * jogo.world.width) + 1), 0, 'star');
-				estrela.body.gravity.y = Math.floor((Math.random() * 150) + 1);			
+				estrela.body.gravity.y = Math.floor((Math.random() * 150) + 1);										
 			}
 			
+			if (bombas.total <= 10){
+				bomba = bombas.create(Math.floor((Math.random() * jogo.world.width) + 1), 0, 'bomb');
+				bomba.body.gravity.y = Math.floor((Math.random() * 150) + 1);	
+				
+			}
+
 			// If our timer is running, show the time in a nicely formatted way, else show 'Done!'
 			if (timer.running) {
 				textoTimer.text = (formatTime(Math.round((timerEvent.delay - timer.ms) / 1000)));
@@ -227,7 +239,13 @@
 		function coletarEstrela(personagem, estrela){
 			estrela.kill();
 			velocidade += 30;	
-		}			
+		}		
+
+		function coletarBombas(personagem, bomba){
+			bomba.kill();
+			placar -= 1;
+			textoPlacar.text = "Recorde: "+placar;
+		}	
 		
      function endTimer() {
         // Stop the timer when the delayed event triggers
